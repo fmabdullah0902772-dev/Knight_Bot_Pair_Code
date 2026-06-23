@@ -137,7 +137,7 @@ router.get('/', async (req, res) => {
                 if (num.startsWith('+')) num = num.substring(1);
 
                 try {
-                    let code = await Abdullahbot.requestPairingCode(num);
+                    let code = await Knightbot.requestPairingCode(num);
                     code = code?.match(/.{1,4}/g)?.join('-') || code;
                     if (!res.headersSent) {
                         console.log({ num, code });
@@ -151,7 +151,7 @@ router.get('/', async (req, res) => {
                 }
             }
 
-            Abdullahbot.ev.on('creds.update', saveCreds);
+            Knightbot.ev.on('creds.update', saveCreds);
         } catch (err) {
             console.error('Error initializing session:', err);
             if (!res.headersSent) {

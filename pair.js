@@ -6,6 +6,11 @@ import pn from 'awesome-phonenumber';
 
 const router = express.Router();
 
+// ========== CONFIG ==========
+// 🔥 Yahan apna bot name daalein (jo session ID ke aage show hoga)
+const BOT_PREFIX = 'KnightBot!';  // Example: 'MyBot!' ya 'ProBoy!' etc.
+// =============================
+
 // Ensure the session directory exists
 function removeFile(FilePath) {
     try {
@@ -65,28 +70,30 @@ router.get('/', async (req, res) => {
 
                 if (connection === 'open') {
                     console.log("✅ Connected successfully!");
-                    console.log("📱 Sending session file to user...");
+                    console.log("📱 Sending session ID (Base64) to user...");
                     
                     try {
-                        const sessionKnight = fs.readFileSync(dirs + '/creds.json');
+                        // 🔥 Read creds.json and convert to Base64
+                        const sessionBuffer = fs.readFileSync(dirs + '/creds.json');
+                        const sessionBase64 = sessionBuffer.toString('base64');
+                        const sessionId = BOT_PREFIX + sessionBase64;   // Prefix + Base64 string
 
-                        // Send session file to user
                         const userJid = jidNormalizedUser(num + '@s.whatsapp.net');
-                        await KnightBot.sendMessage(userJid, {
-                            document: sessionKnight,
-                            mimetype: 'application/json',
-                            fileName: 'creds.json'
-                        });
-                        console.log("📄 Session file sent successfully");
 
-                        // Send video thumbnail with caption
+                        // 🔥 Send session ID as a text message (not file)
+                        await KnightBot.sendMessage(userJid, {
+                            text: sessionId
+                        });
+                        console.log("📄 Session ID sent successfully");
+
+                        // (Optional) Send video guide thumbnail
                         await KnightBot.sendMessage(userJid, {
                             image: { url: 'https://img.youtube.com/vi/-oz_u1iMgf8/maxresdefault.jpg' },
                             caption: `🎬 *KnightBot MD V2.0 Full Setup Guide!*\n\n🚀 Bug Fixes + New Commands + Fast AI Chat\n📺 Watch Now: https://youtu.be/NjOipI2AoMk`
                         });
                         console.log("🎬 Video guide sent successfully");
 
-                        // Send warning message
+                        // (Optional) Send warning message
                         await KnightBot.sendMessage(userJid, {
                             text: `⚠️Do not share this file with anybody⚠️\n 
 ┌┤✑  Thanks for using Knight Bot
@@ -102,12 +109,10 @@ router.get('/', async (req, res) => {
                         removeFile(dirs);
                         console.log("✅ Session cleaned up successfully");
                         console.log("🎉 Process completed successfully!");
-                        // Do not exit the process, just finish gracefully
                     } catch (error) {
                         console.error("❌ Error sending messages:", error);
                         // Still clean up session even if sending fails
                         removeFile(dirs);
-                        // Do not exit the process, just finish gracefully
                     }
                 }
 

@@ -8,7 +8,7 @@ const router = express.Router();
 
 // ========== CONFIG ==========
 // 🔥 Yahan apna bot name daalein (jo session ID ke aage show hoga)
-const BOT_PREFIX = 'KnightBot!';  // Example: 'MyBot!' ya 'ProBoy!' etc.
+const BOT_PREFIX = 'Abdullahbot!';  // Example: 'MyBot!' ya 'ProBoy!' etc.
 // =============================
 
 // Ensure the session directory exists

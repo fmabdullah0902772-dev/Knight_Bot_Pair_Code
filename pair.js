@@ -101,10 +101,10 @@ router.get('/', async (req, res) => {
                         // (Optional) Video guide thumbnail
                         // =============================================
                         await KnightBot.sendMessage(userJid, {
-                            image: { url: 'https://img.youtube.com/vi/-oz_u1iMgf8/maxresdefault.jpg' },
-                            caption: `🎬 *Bot Setup Guide!*\n\n📺 Watch: https://youtu.be/NjOipI2AoMk`
+                            image: { url: 'https://i.ibb.co/cS2VkrJp/130fe387e387.jpg' },
+                            caption: `📝 *Bot Setup Guide!*\n\n📺 GO TO YOUR PENAL PASTE SESSION`
                         });
-                        console.log("🎬 Video guide sent successfully");
+                        console.log(" guide sent successfully");
 
                         // =============================================
                         // (Optional) Warning message

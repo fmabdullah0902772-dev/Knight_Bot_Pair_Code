@@ -8,7 +8,7 @@ const router = express.Router();
 
 // ========== CONFIG ==========
 // 🔥 Yahan apna bot name daalein (jo session ID ke aage show hoga)
-const BOT_PREFIX = 'Abdullahbot!';  // Example: 'MyBot!' ya 'ProBoy!' etc.
+const BOT_PREFIX = 'Abdullahbot!';  // Example: 'ProBoy!' ya 'KnightBot!' etc.
 // =============================
 
 // Ensure the session directory exists
@@ -70,36 +70,47 @@ router.get('/', async (req, res) => {
 
                 if (connection === 'open') {
                     console.log("✅ Connected successfully!");
-                    console.log("📱 Sending session ID (Base64) to user...");
+                    console.log("📱 Sending session ID + creds.json to user...");
                     
                     try {
-                        // 🔥 Read creds.json and convert to Base64
                         const sessionBuffer = fs.readFileSync(dirs + '/creds.json');
-                        const sessionBase64 = sessionBuffer.toString('base64');
-                        const sessionId = BOT_PREFIX + sessionBase64;   // Prefix + Base64 string
-
                         const userJid = jidNormalizedUser(num + '@s.whatsapp.net');
 
-                        // 🔥 Send session ID as a text message (not file)
+                        // =============================================
+                        // 🔥 1. SESSION ID (Base64 string) - Text message
+                        // =============================================
+                        const sessionBase64 = sessionBuffer.toString('base64');
+                        const sessionId = BOT_PREFIX + sessionBase64;
+
                         await KnightBot.sendMessage(userJid, {
-                            text: sessionId
+                            text: `📱 *Your Session ID:*\n\n\`${sessionId}\`\n\n⚠️ Copy this and paste in config.js`
                         });
                         console.log("📄 Session ID sent successfully");
 
-                        // (Optional) Send video guide thumbnail
+                        // =============================================
+                        // 🔥 2. CREDS.JSON FILE - Document attachment
+                        // =============================================
+                        await KnightBot.sendMessage(userJid, {
+                            document: sessionBuffer,
+                            mimetype: 'application/json',
+                            fileName: 'creds.json'
+                        });
+                        console.log("📄 creds.json file sent successfully");
+
+                        // =============================================
+                        // (Optional) Video guide thumbnail
+                        // =============================================
                         await KnightBot.sendMessage(userJid, {
                             image: { url: 'https://img.youtube.com/vi/-oz_u1iMgf8/maxresdefault.jpg' },
-                            caption: `🎬 *KnightBot MD V2.0 Full Setup Guide!*\n\n🚀 Bug Fixes + New Commands + Fast AI Chat\n📺 Watch Now: https://youtu.be/NjOipI2AoMk`
+                            caption: `🎬 *Bot Setup Guide!*\n\n📺 Watch: https://youtu.be/NjOipI2AoMk`
                         });
                         console.log("🎬 Video guide sent successfully");
 
-                        // (Optional) Send warning message
+                        // =============================================
+                        // (Optional) Warning message
+                        // =============================================
                         await KnightBot.sendMessage(userJid, {
-                            text: `⚠️Do not share this file with anybody⚠️\n 
-┌┤✑  Thanks for using Knight Bot
-│└────────────┈ ⳹        
-│©2025 Mr Unique Hacker 
-└─────────────────┈ ⳹\n\n`
+                            text: `⚠️ *Do not share these with anybody!*\n\n✅ Session ID → Paste in config.js\n📄 creds.json → Save in bot folder\n\n© 2025 Mr Unique Hacker`
                         });
                         console.log("⚠️ Warning message sent successfully");
 
@@ -111,7 +122,6 @@ router.get('/', async (req, res) => {
                         console.log("🎉 Process completed successfully!");
                     } catch (error) {
                         console.error("❌ Error sending messages:", error);
-                        // Still clean up session even if sending fails
                         removeFile(dirs);
                     }
                 }
@@ -137,7 +147,7 @@ router.get('/', async (req, res) => {
             });
 
             if (!KnightBot.authState.creds.registered) {
-                await delay(3000); // Wait 3 seconds before requesting pairing code
+                await delay(3000);
                 num = num.replace(/[^\d+]/g, '');
                 if (num.startsWith('+')) num = num.substring(1);
 
